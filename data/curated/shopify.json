@@ -1,0 +1,189 @@
+{
+  "id": "shopify",
+  "provider": "Shopify",
+  "product": "Shopify GraphQL Admin API",
+  "category": "Commerce",
+  "tier": "curated",
+  "lastVerified": "2026-10-27",
+  "defaultRequirement": "Sync products (create, read, update) and read recent orders from a client's Shopify store.",
+  "summary": "Products and orders are well supported. The real decision is app architecture: who owns the store decides how the app is created, how tokens are issued, and how long they last. Old orders and customer data need extra permissions.",
+  "capabilities": [
+    {
+      "id": "product-create",
+      "resource": "Products",
+      "op": "create",
+      "label": "Create products",
+      "method": "GraphQL productCreate / productSet",
+      "status": "conditional",
+      "conditions": "Needs the write_products scope.",
+      "evidence": [
+        { "type": "documented", "title": "Shopify access scopes", "url": "https://shopify.dev/docs/api/usage/access-scopes" }
+      ]
+    },
+    {
+      "id": "product-read",
+      "resource": "Products",
+      "op": "read",
+      "label": "Read products",
+      "method": "GraphQL products query",
+      "status": "conditional",
+      "conditions": "Needs read_products.",
+      "evidence": [
+        { "type": "documented", "title": "Shopify access scopes", "url": "https://shopify.dev/docs/api/usage/access-scopes" }
+      ]
+    },
+    {
+      "id": "product-update",
+      "resource": "Products",
+      "op": "update",
+      "label": "Update products",
+      "method": "GraphQL productUpdate / productSet",
+      "status": "conditional",
+      "conditions": "Needs write_products.",
+      "evidence": [
+        { "type": "documented", "title": "Shopify access scopes", "url": "https://shopify.dev/docs/api/usage/access-scopes" }
+      ]
+    },
+    {
+      "id": "order-read",
+      "resource": "Orders",
+      "op": "read",
+      "label": "Read orders",
+      "method": "GraphQL orders query",
+      "status": "conditional",
+      "conditions": "read_orders covers roughly the last 60 days. Older orders need read_all_orders, which public apps must request and have approved. Orders contain customer details, so apps must also meet Shopify's protected customer data requirements.",
+      "evidence": [
+        { "type": "inferred", "title": "Access scopes: read_all_orders (60-day rule — re-check before quoting)", "url": "https://shopify.dev/docs/api/usage/access-scopes" },
+        { "type": "inferred", "title": "Protected customer data (re-check current levels)", "url": "https://shopify.dev/docs/apps/launch/protected-customer-data" }
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "id": "store-owner",
+      "question": "Who owns the Shopify store(s) the connector will use?",
+      "why": "Since January 1, 2026, new custom apps can no longer be created inside the Shopify admin. The right app type and token flow depend on who owns the store.",
+      "options": [
+        {
+          "label": "Stores in my own Shopify organization",
+          "effects": [
+            { "capability": "product-read", "status": "supported", "conditions": "Create the app in the Dev Dashboard and use the client credentials grant. Tokens last about 24 hours. Read 'expires_in' and request a new token before it expires." }
+          ]
+        },
+        {
+          "label": "One specific client's store",
+          "effects": [
+            { "capability": "product-read", "status": "conditional", "conditions": "Create the app in the Dev Dashboard with custom distribution. The merchant installs it through an install link (OAuth authorization code flow). The client credentials grant only works for stores in the same organization as the app." }
+          ]
+        },
+        {
+          "label": "Many merchants (public app)",
+          "effects": [
+            { "capability": "product-read", "status": "conditional", "conditions": "Public app with OAuth. Public apps must use expiring offline tokens (60-minute access token + 90-day refresh token): required for new public apps since April 1, 2026, and for all public apps by January 1, 2027. App Store listing requires Shopify review." }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "recommended": "Depends on store ownership (answer the question above)",
+    "why": "Shopify now issues tokens differently for same-organization stores (client credentials), client stores (custom distribution + OAuth), and public apps (OAuth + expiring offline tokens).",
+    "alternatives": [
+      "Existing legacy admin-created custom apps keep working, but you cannot create new ones.",
+      "Use the GraphQL Admin API. New public apps must use GraphQL rather than the legacy REST Admin API."
+    ]
+  },
+  "blockers": [
+    {
+      "id": "legacy-custom-apps",
+      "title": "\"Develop apps\" in the store admin no longer creates new apps",
+      "category": "access",
+      "detail": "Older tutorials tell you to create a custom app in the store admin and copy an Admin API token. That path is closed for new apps since January 1, 2026.",
+      "who": "Developer",
+      "resolution": "Create the app in the Shopify Dev Dashboard or with Shopify CLI.",
+      "source": "https://shopify.dev/docs/apps/build/dev-dashboard/get-api-access-tokens"
+    },
+    {
+      "id": "collaborator",
+      "title": "Access to the client's store",
+      "category": "access",
+      "detail": "To install and test on the client's store you need the merchant to install your app, or collaborator access.",
+      "who": "Client's store owner",
+      "resolution": "Send the prepared install request.",
+      "handoff": "Hi! To build {requirement}, please install our app using this link: <INSTALL_LINK>. It requests read_products, write_products and read_orders. Nothing else changes in your store.",
+      "appliesTo": { "answer": { "store-owner": [1] } }
+    },
+    {
+      "id": "all-orders",
+      "title": "Orders older than ~60 days need read_all_orders approval",
+      "category": "approval",
+      "detail": "Public apps must request this scope and explain why.",
+      "who": "Developer, then Shopify",
+      "resolution": "Confirm whether the client actually needs historical orders. If yes, request the scope early.",
+      "appliesTo": { "audience": ["external"] }
+    },
+    {
+      "id": "pcd",
+      "title": "Protected customer data review",
+      "category": "approval",
+      "detail": "Orders include customer names, emails and addresses. Apps must declare and justify the data they use.",
+      "who": "Developer",
+      "resolution": "Request only fields you need and complete the protected customer data form in the Partner/Dev Dashboard.",
+      "appliesTo": { "audience": ["external"] }
+    }
+  ],
+  "alternatives": [
+    {
+      "insteadOf": "Reading full order history",
+      "option": "Read recent orders and subscribe to orders/create webhooks going forward",
+      "doesNotCover": "Orders older than ~60 days"
+    }
+  ],
+  "estimate": {
+    "engineering": { "range": "2–4 days", "assumptions": "GraphQL Admin API, products + recent orders, one dev store for testing." },
+    "waiting": { "range": "Hours to several weeks", "notes": "Own store: none. Client install: depends on merchant. Public app review and read_all_orders / protected data approval: unknown, often weeks." },
+    "uncertainty": [
+      "App architecture depends on store ownership",
+      "Whether historical orders are really required"
+    ]
+  },
+  "guide": [
+    {
+      "stage": "Prerequisites",
+      "tasks": [
+        { "id": "sh-p1", "title": "Create a Shopify Partner / Dev Dashboard account and a dev store", "detail": "Dev stores are free and let you test safely.", "who": "Developer", "doneWhen": "You can log in to the Dev Dashboard and see a dev store.", "source": "https://shopify.dev/docs/apps/build/dev-dashboard" }
+      ]
+    },
+    {
+      "stage": "Choose authentication",
+      "tasks": [
+        { "id": "sh-a1", "title": "Pick the app type", "detail": "Use the answer to 'Who owns the Shopify store(s)?'.", "who": "Developer + client", "doneWhen": "App type and token flow written down." }
+      ]
+    },
+    {
+      "stage": "Configure the app",
+      "tasks": [
+        { "id": "sh-c1", "title": "Create the app in the Dev Dashboard", "detail": "Set scopes read_products, write_products, read_orders. Add redirect URLs if using OAuth.", "who": "Developer", "doneWhen": "You have a client ID and client secret." }
+      ]
+    },
+    {
+      "stage": "Implement the connector",
+      "tasks": [
+        { "id": "sh-i1", "title": "Implement token handling", "detail": "Client credentials: request a token and refresh before 'expires_in'. OAuth: exchange code, store token; for public apps store the refresh token and refresh hourly.", "who": "Developer", "doneWhen": "Connector survives token expiry without manual steps.", "source": "https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens/client-credentials-grant" },
+        { "id": "sh-i2", "title": "Implement product sync with GraphQL", "detail": "Use cursor pagination and respect the cost-based rate limit.", "who": "Developer", "doneWhen": "Products created, read and updated on the dev store." }
+      ]
+    },
+    {
+      "stage": "Test the required behavior",
+      "tasks": [
+        { "id": "sh-t1", "title": "Test the order window", "detail": "Query an order older than 60 days with read_orders only. Record what happens.", "who": "Developer", "doneWhen": "Result recorded in the Evidence tab." }
+      ]
+    },
+    {
+      "stage": "Prepare for production",
+      "tasks": [
+        { "id": "sh-r1", "title": "Complete protected customer data and scope requests", "detail": "Only for public apps or apps using customer data.", "who": "Developer", "doneWhen": "Requests submitted; tracked as 'Waiting for external party'." }
+      ]
+    }
+  ]
+}

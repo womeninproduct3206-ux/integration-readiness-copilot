@@ -1,0 +1,186 @@
+{
+  "id": "google-drive",
+  "provider": "Google Drive",
+  "product": "Google Drive API v3",
+  "category": "Storage",
+  "tier": "curated",
+  "lastVerified": "2026-10-27",
+  "defaultRequirement": "Let users upload files to Google Drive, list and read their files, and delete files the connector created.",
+  "summary": "Upload and per-file access are straightforward with the recommended drive.file scope. Reading every file in a user's Drive needs a restricted scope, which brings Google verification and possibly a paid security assessment. That is usually the biggest cost and delay.",
+  "capabilities": [
+    {
+      "id": "file-create",
+      "resource": "Files",
+      "op": "create",
+      "label": "Upload / create files",
+      "method": "files.create",
+      "status": "supported",
+      "conditions": "Works with the non-sensitive drive.file scope. The app can then access the files it creates.",
+      "evidence": [
+        { "type": "documented", "title": "Choose Google Drive API scopes (drive.file: recommended, non-sensitive)", "url": "https://developers.google.com/workspace/drive/api/guides/api-specific-auth" }
+      ]
+    },
+    {
+      "id": "file-read",
+      "resource": "Files",
+      "op": "read",
+      "label": "List and read files",
+      "method": "files.list / files.get",
+      "status": "unverified",
+      "conditions": "Depends on which files are needed. Answer the question above.",
+      "evidence": [
+        { "type": "documented", "title": "drive.readonly is a restricted scope", "url": "https://developers.google.com/workspace/drive/api/guides/api-specific-auth" }
+      ]
+    },
+    {
+      "id": "file-update",
+      "resource": "Files",
+      "op": "update",
+      "label": "Update files",
+      "method": "files.update",
+      "status": "conditional",
+      "conditions": "With drive.file, only files the app created or the user opened/shared with the app (for example through the Google Picker).",
+      "evidence": [
+        { "type": "documented", "title": "Choose Google Drive API scopes", "url": "https://developers.google.com/workspace/drive/api/guides/api-specific-auth" }
+      ]
+    },
+    {
+      "id": "file-delete",
+      "resource": "Files",
+      "op": "delete",
+      "label": "Delete files",
+      "method": "files.delete (permanent) or files.update with trashed=true (recoverable)",
+      "status": "conditional",
+      "conditions": "files.delete skips the trash and is permanent. Moving to trash is usually safer. The user must have permission to delete the file; in shared drives this needs an elevated role.",
+      "evidence": [
+        { "type": "inferred", "title": "files.delete reference (permanent vs. trash behaviour — re-check before quoting)", "url": "https://developers.google.com/workspace/drive/api/reference/rest/v3/files/delete" }
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "id": "file-scope",
+      "question": "Which files does the connector need to read?",
+      "why": "This one answer decides between a scope that needs only basic verification and a restricted scope that needs Google review and possibly a security assessment.",
+      "options": [
+        {
+          "label": "Only files the connector created, or that the user picks",
+          "effects": [
+            { "capability": "file-read", "status": "supported", "conditions": "Use drive.file plus the Google Picker for user-selected files. Non-sensitive scope: basic verification only." },
+            { "capability": "file-update", "status": "supported", "conditions": "Covered by drive.file for the same set of files." }
+          ]
+        },
+        {
+          "label": "Every file in the user's Drive",
+          "effects": [
+            { "capability": "file-read", "status": "conditional", "conditions": "Needs drive.readonly or drive, which are restricted scopes. Requires restricted-scope verification. If the data is stored on or sent through your servers, a third-party security assessment is also required. Only certain app types are allowed to use these scopes." }
+          ]
+        },
+        {
+          "label": "Files across the whole company (admin / background sync)",
+          "effects": [
+            { "capability": "file-read", "status": "conditional", "conditions": "Use a service account with domain-wide delegation, granted by the client's Google Workspace super admin. Only works for Google Workspace customers, not personal Gmail accounts." }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "recommended": "OAuth 2.0 authorization code flow with offline access (refresh token) and the drive.file scope",
+    "why": "Narrowest scope that fits most connectors, and the lightest verification path.",
+    "alternatives": [
+      "Service account + domain-wide delegation for company-wide background access (Workspace admins only).",
+      "Internal OAuth app (user type 'Internal') if only the client's own Workspace users will connect. Google verification is not needed for internal apps."
+    ]
+  },
+  "blockers": [
+    {
+      "id": "verification",
+      "title": "Google OAuth app verification",
+      "category": "approval",
+      "detail": "Apps used by people outside your Google Workspace organization need verification. Restricted scopes need restricted-scope verification and possibly a paid security assessment from an approved assessor.",
+      "who": "Developer, then Google",
+      "resolution": "Pick the narrowest scope first. Prepare privacy policy, homepage, and a demo video. Start verification early. Treat duration as unknown.",
+      "appliesTo": { "audience": ["external"] }
+    },
+    {
+      "id": "testing-tokens",
+      "title": "Refresh tokens expire after 7 days while the app is in 'Testing'",
+      "category": "auth",
+      "detail": "External apps whose consent screen is in Testing status get refresh tokens that expire after 7 days. Background jobs will silently stop working.",
+      "who": "Developer",
+      "resolution": "Expect weekly re-consent during testing, or publish the app (In production) before running long background tests.",
+      "appliesTo": { "audience": ["external"], "runtime": ["background", "both", "unsure"] }
+    },
+    {
+      "id": "dwd-admin",
+      "title": "Domain-wide delegation needs a Workspace super admin",
+      "category": "access",
+      "detail": "Only needed if company-wide background access was chosen.",
+      "who": "Client's Google Workspace super admin",
+      "resolution": "Send the prepared request with the service account client ID and exact scopes.",
+      "handoff": "Hi! To build {requirement}, we need domain-wide delegation for our service account. In the Admin console go to Security > Access and data control > API controls > Domain-wide delegation, and add client ID <CLIENT_ID> with scope https://www.googleapis.com/auth/drive.readonly. Reply if you'd prefer a narrower approach.",
+      "appliesTo": { "answer": { "file-scope": [2] } }
+    }
+  ],
+  "alternatives": [
+    {
+      "insteadOf": "Reading every file (restricted scope)",
+      "option": "drive.file + Google Picker so users choose files",
+      "doesNotCover": "Automatically discovering files the user never picked"
+    },
+    {
+      "insteadOf": "Permanent deletion",
+      "option": "Move files to trash (recoverable for a period)",
+      "doesNotCover": "Immediate, irreversible removal"
+    }
+  ],
+  "estimate": {
+    "engineering": { "range": "1–3 days", "assumptions": "drive.file scope, standard OAuth, Picker integration." },
+    "waiting": { "range": "Days to several weeks", "notes": "Basic verification: usually days. Restricted scopes and security assessment: weeks, and the assessment has a cost. Internal apps: none." },
+    "uncertainty": [
+      "Scope choice depends on the client's answer above",
+      "Verification timelines are set by Google and not guaranteed"
+    ]
+  },
+  "guide": [
+    {
+      "stage": "Prerequisites",
+      "tasks": [
+        { "id": "g-p1", "title": "Create a Google Cloud project and enable the Drive API", "detail": "Any Google account works for testing.", "who": "Developer", "doneWhen": "Drive API shows as 'Enabled' in the Cloud console.", "source": "https://console.cloud.google.com/apis/library/drive.googleapis.com" }
+      ]
+    },
+    {
+      "stage": "Choose authentication",
+      "tasks": [
+        { "id": "g-a1", "title": "Pick the narrowest scope", "detail": "Use the answer to 'Which files does the connector need to read?'. Prefer drive.file.", "who": "Developer + client", "doneWhen": "Scope written down and agreed." }
+      ]
+    },
+    {
+      "stage": "Configure the app",
+      "tasks": [
+        { "id": "g-c1", "title": "Configure the OAuth consent screen", "detail": "Choose Internal (same Workspace only) or External. Add app name, support email, and scopes.", "who": "Developer", "doneWhen": "Consent screen saved." },
+        { "id": "g-c2", "title": "Create an OAuth client ID (Web application)", "detail": "Add your exact redirect URI.", "who": "Developer", "doneWhen": "You have a client ID and secret stored as environment variables." }
+      ]
+    },
+    {
+      "stage": "Implement the connector",
+      "tasks": [
+        { "id": "g-i1", "title": "Implement authorization code flow with access_type=offline", "detail": "Store the refresh token encrypted. Access tokens are short-lived.", "who": "Developer", "doneWhen": "Connector refreshes tokens automatically." },
+        { "id": "g-i2", "title": "Add the Google Picker (if using drive.file for existing files)", "detail": "Lets users choose files and grants your app access to them.", "who": "Developer", "doneWhen": "A picked file can be read by the connector." }
+      ]
+    },
+    {
+      "stage": "Test the required behavior",
+      "tasks": [
+        { "id": "g-t1", "title": "Prove scope limits", "detail": "With drive.file, try files.list. You should only see app-created and picked files. Record the result.", "who": "Developer", "doneWhen": "Result recorded in the Evidence tab." }
+      ]
+    },
+    {
+      "stage": "Prepare for production",
+      "tasks": [
+        { "id": "g-r1", "title": "Submit for verification (External apps)", "detail": "Privacy policy, homepage, domain verification, and scope justification. Add a demo video for sensitive/restricted scopes.", "who": "Developer", "doneWhen": "Verification submitted; status tracked as 'Waiting for external party'." }
+      ]
+    }
+  ]
+}

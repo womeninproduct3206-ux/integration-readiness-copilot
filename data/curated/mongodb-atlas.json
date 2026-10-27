@@ -1,0 +1,281 @@
+{
+  "id": "mongodb-atlas",
+  "provider": "MongoDB Atlas",
+  "product": "Atlas Administration API + MongoDB database connections",
+  "category": "Database",
+  "tier": "curated",
+  "lastVerified": "2026-10-27",
+  "defaultRequirement": "Build a connector that creates, reads, updates and deletes documents in a client's MongoDB Atlas database.",
+  "summary": "\"Connect to MongoDB Atlas\" can mean two different things: managing Atlas itself (clusters, users) through the Admin API, or reading and writing data through a database driver. They use completely different authentication. Neither uses the typical 'Sign in with…' OAuth popup, which matters if your connector platform only supports that.",
+  "capabilities": [
+    {
+      "id": "doc-create",
+      "resource": "Documents",
+      "op": "create",
+      "label": "Create documents",
+      "method": "MongoDB driver insertOne / insertMany",
+      "status": "conditional",
+      "conditions": "Needs a database connection string, a database user with write access, and network access from where the connector runs.",
+      "evidence": [
+        {
+          "type": "inferred",
+          "title": "Atlas: connect to your cluster (re-check auth options for the client's tier)",
+          "url": "https://www.mongodb.com/docs/atlas/connect-to-database-deployment/"
+        }
+      ]
+    },
+    {
+      "id": "doc-read",
+      "resource": "Documents",
+      "op": "read",
+      "label": "Read documents",
+      "method": "MongoDB driver find / aggregate",
+      "status": "conditional",
+      "conditions": "Same requirements as create. Needs a long-running server-side process: Atlas's HTTPS Data API has been retired, so a driver connection is required.",
+      "evidence": [
+        {
+          "type": "inferred",
+          "title": "Atlas Data API deprecation (re-check)",
+          "url": "https://www.mongodb.com/docs/atlas/app-services/data-api/data-api-deprecation/"
+        }
+      ]
+    },
+    {
+      "id": "doc-update",
+      "resource": "Documents",
+      "op": "update",
+      "label": "Update documents",
+      "method": "MongoDB driver updateOne / updateMany",
+      "status": "conditional",
+      "conditions": "Database user needs readWrite on the target database.",
+      "evidence": []
+    },
+    {
+      "id": "doc-delete",
+      "resource": "Documents",
+      "op": "delete",
+      "label": "Delete documents",
+      "method": "MongoDB driver deleteOne / deleteMany",
+      "status": "conditional",
+      "conditions": "Database user needs readWrite. Deletes are permanent unless the client has backups.",
+      "evidence": []
+    },
+    {
+      "id": "admin-manage",
+      "resource": "Atlas resources",
+      "op": "other",
+      "label": "Manage clusters, users and projects",
+      "method": "Atlas Administration API v2",
+      "status": "conditional",
+      "conditions": "Authenticate with a service account (OAuth 2.0 client credentials, tokens valid for 1 hour), or with legacy API keys (HTTP digest). Assign only the roles you need. Calls are only accepted from IP addresses on the API access list.",
+      "evidence": [
+        {
+          "type": "documented",
+          "title": "Atlas API authentication",
+          "url": "https://www.mongodb.com/docs/atlas/api/api-authentication/"
+        },
+        {
+          "type": "documented",
+          "title": "Generate a service account token (1-hour tokens)",
+          "url": "https://www.mongodb.com/docs/atlas/api/service-accounts/generate-oauth2-token/"
+        }
+      ],
+      "keywords": [
+        "manage",
+        "cluster",
+        "admin",
+        "project",
+        "access list",
+        "database user"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "id": "atlas-surface",
+      "question": "What does the connector need to do in MongoDB Atlas?",
+      "why": "Data access and Atlas management use different APIs, credentials and network rules.",
+      "options": [
+        {
+          "label": "Read and write data in a database",
+          "effects": [
+            {
+              "capability": "admin-manage",
+              "hide": true
+            }
+          ]
+        },
+        {
+          "label": "Manage Atlas itself (clusters, database users, access lists)",
+          "effects": [
+            {
+              "capability": "admin-manage",
+              "status": "supported",
+              "conditions": "Use an Atlas service account (client credentials). Refresh the token every hour; handle HTTP 401 by requesting a new one."
+            }
+          ]
+        },
+        {
+          "label": "Both",
+          "effects": [
+            {
+              "capability": "admin-manage",
+              "status": "conditional",
+              "conditions": "Two separate credentials: a service account for the Admin API and a database user for data. Keep them separate."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "recommended": "Database user (username/password via SCRAM) in a connection string for data. Atlas service account (OAuth 2.0 client credentials) for the Admin API.",
+    "why": "These are the default, widely supported paths. Neither requires a user-facing OAuth consent screen.",
+    "alternatives": [
+      "X.509 certificates, AWS IAM, or OIDC / workload identity federation for database auth. Availability depends on cluster tier and configuration; verify before promising.",
+      "Legacy Atlas API keys (digest auth). Prefer service accounts for new work."
+    ]
+  },
+  "blockers": [
+    {
+      "id": "network",
+      "title": "Network access list blocks unknown IPs",
+      "category": "access",
+      "detail": "Atlas only accepts connections from allowed IPs (or private endpoints). Cloud-hosted connectors and AI agents often have changing IPs.",
+      "who": "Client's Atlas project owner",
+      "resolution": "Give the client a fixed egress IP range for the connector, or set up private networking. Avoid 0.0.0.0/0 in production.",
+      "handoff": "Hi! To build {requirement}, please add our connector's egress IPs <IP_LIST> to the Atlas project's Network Access list, and create a database user with readWrite on <DATABASE>. Docs: https://www.mongodb.com/docs/atlas/security/ip-access-list/"
+    },
+    {
+      "id": "grant-type",
+      "title": "Your connector platform may not support this auth style",
+      "category": "auth",
+      "detail": "Many connector platforms expect 'authorization code' OAuth with a consent popup. Atlas uses connection strings and client credentials instead.",
+      "who": "Developer",
+      "resolution": "Check your platform supports custom credential fields (connection string, client ID/secret). If not, this is a platform gap, not an Atlas gap.",
+      "appliesTo": {
+        "audience": [
+          "external"
+        ]
+      }
+    },
+    {
+      "id": "long-running",
+      "title": "Needs a server-side runtime",
+      "category": "capability",
+      "detail": "Drivers keep persistent connections. Serverless or browser-only connectors need connection pooling or a small backend.",
+      "who": "Developer",
+      "resolution": "Run data access in a backend service and reuse the client across requests.",
+      "appliesTo": {
+        "runtime": [
+          "background",
+          "both",
+          "unsure"
+        ]
+      }
+    }
+  ],
+  "alternatives": [
+    {
+      "insteadOf": "The retired Atlas Data API (HTTPS)",
+      "option": "A small backend using an official MongoDB driver that exposes only the operations you need",
+      "doesNotCover": "Calling MongoDB directly from a browser or no-code tool without a backend"
+    }
+  ],
+  "estimate": {
+    "engineering": {
+      "range": "1–2 days",
+      "assumptions": "Driver-based CRUD with a database user, fixed egress IP available."
+    },
+    "waiting": {
+      "range": "Hours to days",
+      "notes": "Depends on the client adding your IPs and creating a database user."
+    },
+    "uncertainty": [
+      "Whether your connector runtime has a fixed outbound IP",
+      "Whether the client's security team allows username/password database users"
+    ]
+  },
+  "guide": [
+    {
+      "stage": "Prerequisites",
+      "tasks": [
+        {
+          "id": "m-p1",
+          "title": "Create a free Atlas cluster for testing",
+          "detail": "Sign up at cloud.mongodb.com and create a free cluster.",
+          "who": "Developer",
+          "doneWhen": "A cluster shows as 'Active'.",
+          "source": "https://cloud.mongodb.com"
+        }
+      ]
+    },
+    {
+      "stage": "Choose authentication",
+      "tasks": [
+        {
+          "id": "m-a1",
+          "title": "Decide data vs. admin access",
+          "detail": "Use the answer to 'What does the connector need to do?'.",
+          "who": "Developer + client",
+          "doneWhen": "Credential types written down."
+        }
+      ]
+    },
+    {
+      "stage": "Configure the app",
+      "tasks": [
+        {
+          "id": "m-c1",
+          "title": "Create a database user with least privilege",
+          "detail": "Database Access > Add user. Grant readWrite on one database only.",
+          "who": "Client (or you on your test cluster)",
+          "doneWhen": "User exists with the right role."
+        },
+        {
+          "id": "m-c2",
+          "title": "Add your connector's IP to Network Access",
+          "detail": "Use your current IP for testing.",
+          "who": "Client (or you on your test cluster)",
+          "doneWhen": "Connection from your machine succeeds."
+        }
+      ]
+    },
+    {
+      "stage": "Implement the connector",
+      "tasks": [
+        {
+          "id": "m-i1",
+          "title": "Connect with the official driver",
+          "detail": "Store the connection string as a secret. Create one client and reuse it.",
+          "who": "Developer",
+          "doneWhen": "A test query returns data."
+        }
+      ]
+    },
+    {
+      "stage": "Test the required behavior",
+      "tasks": [
+        {
+          "id": "m-t1",
+          "title": "Test CRUD on a scratch collection",
+          "detail": "Insert, read, update and delete a test document. Then remove your IP and confirm you get a clear network error message.",
+          "who": "Developer",
+          "doneWhen": "Results recorded in the Evidence tab."
+        }
+      ]
+    },
+    {
+      "stage": "Prepare for production",
+      "tasks": [
+        {
+          "id": "m-r1",
+          "title": "Fixed egress IPs and credential rotation",
+          "detail": "Agree a rotation schedule for database passwords / service account secrets.",
+          "who": "Developer + client",
+          "doneWhen": "Rotation documented."
+        }
+      ]
+    }
+  ]
+}

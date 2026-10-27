@@ -1,0 +1,772 @@
+[
+  {
+    "id": "slack",
+    "name": "Slack",
+    "category": "Communication",
+    "docsUrl": "https://docs.slack.dev",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "google-drive",
+    "name": "Google Drive",
+    "category": "Storage",
+    "docsUrl": "https://developers.google.com/workspace/drive",
+    "authHint": "OAuth 2.0, service account"
+  },
+  {
+    "id": "shopify",
+    "name": "Shopify",
+    "category": "Commerce",
+    "docsUrl": "https://shopify.dev",
+    "authHint": "OAuth 2.0, client credentials"
+  },
+  {
+    "id": "mongodb-atlas",
+    "name": "MongoDB Atlas",
+    "category": "Database",
+    "docsUrl": "https://www.mongodb.com/docs/atlas/api/",
+    "authHint": "Service account (client credentials), database user"
+  },
+  {
+    "id": "gmail",
+    "name": "Gmail",
+    "category": "Communication",
+    "docsUrl": "https://developers.google.com/workspace/gmail",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "google-calendar",
+    "name": "Google Calendar",
+    "category": "Productivity",
+    "docsUrl": "https://developers.google.com/workspace/calendar",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "google-sheets",
+    "name": "Google Sheets",
+    "category": "Productivity",
+    "docsUrl": "https://developers.google.com/workspace/sheets",
+    "authHint": "OAuth 2.0, service account"
+  },
+  {
+    "id": "google-docs",
+    "name": "Google Docs",
+    "category": "Productivity",
+    "docsUrl": "https://developers.google.com/workspace/docs",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "microsoft-outlook",
+    "name": "Microsoft Outlook (Graph)",
+    "category": "Communication",
+    "docsUrl": "https://learn.microsoft.com/graph",
+    "authHint": "OAuth 2.0 (Microsoft identity platform)"
+  },
+  {
+    "id": "microsoft-teams",
+    "name": "Microsoft Teams (Graph)",
+    "category": "Communication",
+    "docsUrl": "https://learn.microsoft.com/graph",
+    "authHint": "OAuth 2.0 (Microsoft identity platform)"
+  },
+  {
+    "id": "onedrive",
+    "name": "OneDrive (Graph)",
+    "category": "Storage",
+    "docsUrl": "https://learn.microsoft.com/graph",
+    "authHint": "OAuth 2.0 (Microsoft identity platform)"
+  },
+  {
+    "id": "sharepoint",
+    "name": "SharePoint (Graph)",
+    "category": "Storage",
+    "docsUrl": "https://learn.microsoft.com/graph",
+    "authHint": "OAuth 2.0 (Microsoft identity platform)"
+  },
+  {
+    "id": "microsoft-excel",
+    "name": "Microsoft Excel (Graph)",
+    "category": "Productivity",
+    "docsUrl": "https://learn.microsoft.com/graph",
+    "authHint": "OAuth 2.0 (Microsoft identity platform)"
+  },
+  {
+    "id": "dropbox",
+    "name": "Dropbox",
+    "category": "Storage",
+    "docsUrl": "https://www.dropbox.com/developers",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "box",
+    "name": "Box",
+    "category": "Storage",
+    "docsUrl": "https://developer.box.com",
+    "authHint": "OAuth 2.0, JWT, client credentials"
+  },
+  {
+    "id": "notion",
+    "name": "Notion",
+    "category": "Productivity",
+    "docsUrl": "https://developers.notion.com",
+    "authHint": "OAuth 2.0, internal integration token"
+  },
+  {
+    "id": "airtable",
+    "name": "Airtable",
+    "category": "Productivity",
+    "docsUrl": "https://airtable.com/developers/web",
+    "authHint": "OAuth 2.0, personal access token"
+  },
+  {
+    "id": "asana",
+    "name": "Asana",
+    "category": "Project management",
+    "docsUrl": "https://developers.asana.com",
+    "authHint": "OAuth 2.0, personal access token"
+  },
+  {
+    "id": "trello",
+    "name": "Trello",
+    "category": "Project management",
+    "docsUrl": "https://developer.atlassian.com/cloud/trello",
+    "authHint": "API key + token"
+  },
+  {
+    "id": "jira",
+    "name": "Jira",
+    "category": "Project management",
+    "docsUrl": "https://developer.atlassian.com/cloud/jira/platform",
+    "authHint": "OAuth 2.0 (3LO), API token"
+  },
+  {
+    "id": "confluence",
+    "name": "Confluence",
+    "category": "Productivity",
+    "docsUrl": "https://developer.atlassian.com/cloud/confluence",
+    "authHint": "OAuth 2.0 (3LO), API token"
+  },
+  {
+    "id": "linear",
+    "name": "Linear",
+    "category": "Project management",
+    "docsUrl": "https://linear.app/developers",
+    "authHint": "OAuth 2.0, API key"
+  },
+  {
+    "id": "monday-com",
+    "name": "monday.com",
+    "category": "Project management",
+    "docsUrl": "https://developer.monday.com",
+    "authHint": "OAuth 2.0, API token"
+  },
+  {
+    "id": "clickup",
+    "name": "ClickUp",
+    "category": "Project management",
+    "docsUrl": "https://developer.clickup.com",
+    "authHint": "OAuth 2.0, personal token"
+  },
+  {
+    "id": "smartsheet",
+    "name": "Smartsheet",
+    "category": "Project management",
+    "docsUrl": "https://developers.smartsheet.com",
+    "authHint": "OAuth 2.0, API token"
+  },
+  {
+    "id": "basecamp",
+    "name": "Basecamp",
+    "category": "Project management",
+    "docsUrl": "https://github.com/basecamp/bc3-api",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "todoist",
+    "name": "Todoist",
+    "category": "Productivity",
+    "docsUrl": "https://developer.todoist.com",
+    "authHint": "OAuth 2.0, API token"
+  },
+  {
+    "id": "evernote",
+    "name": "Evernote",
+    "category": "Productivity",
+    "docsUrl": "https://dev.evernote.com",
+    "authHint": "OAuth 1.0a"
+  },
+  {
+    "id": "coda",
+    "name": "Coda",
+    "category": "Productivity",
+    "docsUrl": "https://coda.io/developers",
+    "authHint": "API token"
+  },
+  {
+    "id": "github",
+    "name": "GitHub",
+    "category": "Developer tools",
+    "docsUrl": "https://docs.github.com/rest",
+    "authHint": "GitHub App, OAuth 2.0, personal access token"
+  },
+  {
+    "id": "gitlab",
+    "name": "GitLab",
+    "category": "Developer tools",
+    "docsUrl": "https://docs.gitlab.com/api/",
+    "authHint": "OAuth 2.0, access token"
+  },
+  {
+    "id": "bitbucket",
+    "name": "Bitbucket",
+    "category": "Developer tools",
+    "docsUrl": "https://developer.atlassian.com/cloud/bitbucket",
+    "authHint": "OAuth 2.0, access token"
+  },
+  {
+    "id": "vercel",
+    "name": "Vercel",
+    "category": "Developer tools",
+    "docsUrl": "https://vercel.com/docs/rest-api",
+    "authHint": "Access token, OAuth (integrations)"
+  },
+  {
+    "id": "netlify",
+    "name": "Netlify",
+    "category": "Developer tools",
+    "docsUrl": "https://docs.netlify.com/api/get-started/",
+    "authHint": "OAuth 2.0, personal access token"
+  },
+  {
+    "id": "sentry",
+    "name": "Sentry",
+    "category": "Developer tools",
+    "docsUrl": "https://docs.sentry.io/api/",
+    "authHint": "Auth token, OAuth (integrations)"
+  },
+  {
+    "id": "pagerduty",
+    "name": "PagerDuty",
+    "category": "Developer tools",
+    "docsUrl": "https://developer.pagerduty.com",
+    "authHint": "OAuth 2.0, API key"
+  },
+  {
+    "id": "datadog",
+    "name": "Datadog",
+    "category": "Developer tools",
+    "docsUrl": "https://docs.datadoghq.com/api/",
+    "authHint": "API key + application key"
+  },
+  {
+    "id": "postman",
+    "name": "Postman",
+    "category": "Developer tools",
+    "docsUrl": "https://learning.postman.com/docs/developer/postman-api/intro-api/",
+    "authHint": "API key"
+  },
+  {
+    "id": "salesforce",
+    "name": "Salesforce",
+    "category": "CRM",
+    "docsUrl": "https://developer.salesforce.com",
+    "authHint": "OAuth 2.0 (several flows)"
+  },
+  {
+    "id": "hubspot",
+    "name": "HubSpot",
+    "category": "CRM",
+    "docsUrl": "https://developers.hubspot.com",
+    "authHint": "OAuth 2.0, private app token"
+  },
+  {
+    "id": "pipedrive",
+    "name": "Pipedrive",
+    "category": "CRM",
+    "docsUrl": "https://developers.pipedrive.com",
+    "authHint": "OAuth 2.0, API token"
+  },
+  {
+    "id": "zoho-crm",
+    "name": "Zoho CRM",
+    "category": "CRM",
+    "docsUrl": "https://www.zoho.com/crm/developer/docs/api/",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "microsoft-dynamics-365",
+    "name": "Microsoft Dynamics 365",
+    "category": "CRM",
+    "docsUrl": "https://learn.microsoft.com/dynamics365/",
+    "authHint": "OAuth 2.0 (Microsoft identity platform)"
+  },
+  {
+    "id": "close",
+    "name": "Close",
+    "category": "CRM",
+    "docsUrl": "https://developer.close.com",
+    "authHint": "OAuth 2.0, API key"
+  },
+  {
+    "id": "copper",
+    "name": "Copper",
+    "category": "CRM",
+    "docsUrl": "https://developer.copper.com",
+    "authHint": "API key"
+  },
+  {
+    "id": "attio",
+    "name": "Attio",
+    "category": "CRM",
+    "docsUrl": "https://docs.attio.com",
+    "authHint": "OAuth 2.0, API key"
+  },
+  {
+    "id": "intercom",
+    "name": "Intercom",
+    "category": "Support",
+    "docsUrl": "https://developers.intercom.com",
+    "authHint": "OAuth 2.0, access token"
+  },
+  {
+    "id": "zendesk",
+    "name": "Zendesk",
+    "category": "Support",
+    "docsUrl": "https://developer.zendesk.com",
+    "authHint": "OAuth 2.0, API token"
+  },
+  {
+    "id": "freshdesk",
+    "name": "Freshdesk",
+    "category": "Support",
+    "docsUrl": "https://developers.freshdesk.com",
+    "authHint": "API key"
+  },
+  {
+    "id": "help-scout",
+    "name": "Help Scout",
+    "category": "Support",
+    "docsUrl": "https://developer.helpscout.com",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "front",
+    "name": "Front",
+    "category": "Support",
+    "docsUrl": "https://dev.frontapp.com",
+    "authHint": "OAuth 2.0, API token"
+  },
+  {
+    "id": "servicenow",
+    "name": "ServiceNow",
+    "category": "Support",
+    "docsUrl": "https://developer.servicenow.com",
+    "authHint": "OAuth 2.0, basic auth"
+  },
+  {
+    "id": "stripe",
+    "name": "Stripe",
+    "category": "Payments",
+    "docsUrl": "https://docs.stripe.com/api",
+    "authHint": "API key, Stripe Connect OAuth"
+  },
+  {
+    "id": "paypal",
+    "name": "PayPal",
+    "category": "Payments",
+    "docsUrl": "https://developer.paypal.com",
+    "authHint": "OAuth 2.0 (client credentials)"
+  },
+  {
+    "id": "square",
+    "name": "Square",
+    "category": "Payments",
+    "docsUrl": "https://developer.squareup.com",
+    "authHint": "OAuth 2.0, access token"
+  },
+  {
+    "id": "braintree",
+    "name": "Braintree",
+    "category": "Payments",
+    "docsUrl": "https://developer.paypal.com/braintree/docs",
+    "authHint": "API keys"
+  },
+  {
+    "id": "adyen",
+    "name": "Adyen",
+    "category": "Payments",
+    "docsUrl": "https://docs.adyen.com",
+    "authHint": "API key"
+  },
+  {
+    "id": "plaid",
+    "name": "Plaid",
+    "category": "Finance",
+    "docsUrl": "https://plaid.com/docs",
+    "authHint": "Client ID + secret, Link tokens"
+  },
+  {
+    "id": "quickbooks-online",
+    "name": "QuickBooks Online",
+    "category": "Finance",
+    "docsUrl": "https://developer.intuit.com",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "xero",
+    "name": "Xero",
+    "category": "Finance",
+    "docsUrl": "https://developer.xero.com",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "freshbooks",
+    "name": "FreshBooks",
+    "category": "Finance",
+    "docsUrl": "https://www.freshbooks.com/api",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "netsuite",
+    "name": "NetSuite",
+    "category": "Finance",
+    "docsUrl": "https://docs.oracle.com/en/cloud/saas/netsuite/",
+    "authHint": "OAuth 2.0, token-based auth"
+  },
+  {
+    "id": "brex",
+    "name": "Brex",
+    "category": "Finance",
+    "docsUrl": "https://developer.brex.com",
+    "authHint": "OAuth 2.0, API token"
+  },
+  {
+    "id": "ramp",
+    "name": "Ramp",
+    "category": "Finance",
+    "docsUrl": "https://docs.ramp.com",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "woocommerce",
+    "name": "WooCommerce",
+    "category": "Commerce",
+    "docsUrl": "https://woocommerce.github.io/woocommerce-rest-api-docs/",
+    "authHint": "API key (consumer key/secret)"
+  },
+  {
+    "id": "bigcommerce",
+    "name": "BigCommerce",
+    "category": "Commerce",
+    "docsUrl": "https://developer.bigcommerce.com",
+    "authHint": "OAuth 2.0, API account token"
+  },
+  {
+    "id": "magento",
+    "name": "Magento (Adobe Commerce)",
+    "category": "Commerce",
+    "docsUrl": "https://developer.adobe.com/commerce/webapi/",
+    "authHint": "OAuth 1.0a, tokens"
+  },
+  {
+    "id": "amazon-selling-partner-api",
+    "name": "Amazon Selling Partner API",
+    "category": "Commerce",
+    "docsUrl": "https://developer-docs.amazon.com/sp-api",
+    "authHint": "OAuth 2.0 (Login with Amazon)"
+  },
+  {
+    "id": "ebay",
+    "name": "eBay",
+    "category": "Commerce",
+    "docsUrl": "https://developer.ebay.com",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "etsy",
+    "name": "Etsy",
+    "category": "Commerce",
+    "docsUrl": "https://developers.etsy.com",
+    "authHint": "OAuth 2.0 (PKCE)"
+  },
+  {
+    "id": "mailchimp",
+    "name": "Mailchimp",
+    "category": "Marketing",
+    "docsUrl": "https://mailchimp.com/developer",
+    "authHint": "OAuth 2.0, API key"
+  },
+  {
+    "id": "klaviyo",
+    "name": "Klaviyo",
+    "category": "Marketing",
+    "docsUrl": "https://developers.klaviyo.com",
+    "authHint": "OAuth 2.0, private API key"
+  },
+  {
+    "id": "sendgrid",
+    "name": "SendGrid",
+    "category": "Marketing",
+    "docsUrl": "https://www.twilio.com/docs/sendgrid",
+    "authHint": "API key"
+  },
+  {
+    "id": "brevo",
+    "name": "Brevo",
+    "category": "Marketing",
+    "docsUrl": "https://developers.brevo.com",
+    "authHint": "API key"
+  },
+  {
+    "id": "marketo",
+    "name": "Marketo",
+    "category": "Marketing",
+    "docsUrl": "https://developer.adobe.com/marketo-apis/",
+    "authHint": "OAuth 2.0 (client credentials)"
+  },
+  {
+    "id": "activecampaign",
+    "name": "ActiveCampaign",
+    "category": "Marketing",
+    "docsUrl": "https://developers.activecampaign.com",
+    "authHint": "API key"
+  },
+  {
+    "id": "google-ads",
+    "name": "Google Ads",
+    "category": "Marketing",
+    "docsUrl": "https://developers.google.com/google-ads/api",
+    "authHint": "OAuth 2.0 + developer token"
+  },
+  {
+    "id": "meta-marketing-api",
+    "name": "Meta Marketing API",
+    "category": "Marketing",
+    "docsUrl": "https://developers.facebook.com/docs/marketing-apis",
+    "authHint": "OAuth 2.0 (Facebook Login), system user token"
+  },
+  {
+    "id": "linkedin",
+    "name": "LinkedIn",
+    "category": "Social",
+    "docsUrl": "https://learn.microsoft.com/linkedin/",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "x",
+    "name": "X (Twitter)",
+    "category": "Social",
+    "docsUrl": "https://docs.x.com",
+    "authHint": "OAuth 2.0, OAuth 1.0a"
+  },
+  {
+    "id": "youtube-data-api",
+    "name": "YouTube Data API",
+    "category": "Social",
+    "docsUrl": "https://developers.google.com/youtube/v3",
+    "authHint": "OAuth 2.0, API key"
+  },
+  {
+    "id": "instagram-graph-api",
+    "name": "Instagram Graph API",
+    "category": "Social",
+    "docsUrl": "https://developers.facebook.com/docs/instagram-platform",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "tiktok",
+    "name": "TikTok",
+    "category": "Social",
+    "docsUrl": "https://developers.tiktok.com",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "reddit",
+    "name": "Reddit",
+    "category": "Social",
+    "docsUrl": "https://www.reddit.com/dev/api",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "discord",
+    "name": "Discord",
+    "category": "Communication",
+    "docsUrl": "https://discord.com/developers/docs",
+    "authHint": "Bot token, OAuth 2.0"
+  },
+  {
+    "id": "telegram-bot-api",
+    "name": "Telegram Bot API",
+    "category": "Communication",
+    "docsUrl": "https://core.telegram.org/bots/api",
+    "authHint": "Bot token"
+  },
+  {
+    "id": "twilio",
+    "name": "Twilio",
+    "category": "Communication",
+    "docsUrl": "https://www.twilio.com/docs",
+    "authHint": "Account SID + auth token, API key"
+  },
+  {
+    "id": "zoom",
+    "name": "Zoom",
+    "category": "Communication",
+    "docsUrl": "https://developers.zoom.us",
+    "authHint": "OAuth 2.0, Server-to-Server OAuth"
+  },
+  {
+    "id": "whatsapp-business-platform",
+    "name": "WhatsApp Business Platform",
+    "category": "Communication",
+    "docsUrl": "https://developers.facebook.com/docs/whatsapp",
+    "authHint": "System user token"
+  },
+  {
+    "id": "calendly",
+    "name": "Calendly",
+    "category": "Productivity",
+    "docsUrl": "https://developer.calendly.com",
+    "authHint": "OAuth 2.0, personal access token"
+  },
+  {
+    "id": "docusign",
+    "name": "DocuSign",
+    "category": "Productivity",
+    "docsUrl": "https://developers.docusign.com",
+    "authHint": "OAuth 2.0 (auth code, JWT)"
+  },
+  {
+    "id": "typeform",
+    "name": "Typeform",
+    "category": "Productivity",
+    "docsUrl": "https://www.typeform.com/developers",
+    "authHint": "OAuth 2.0, personal token"
+  },
+  {
+    "id": "surveymonkey",
+    "name": "SurveyMonkey",
+    "category": "Productivity",
+    "docsUrl": "https://developer.surveymonkey.com",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "figma",
+    "name": "Figma",
+    "category": "Design",
+    "docsUrl": "https://www.figma.com/developers/api",
+    "authHint": "OAuth 2.0, personal access token"
+  },
+  {
+    "id": "miro",
+    "name": "Miro",
+    "category": "Design",
+    "docsUrl": "https://developers.miro.com",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "canva",
+    "name": "Canva",
+    "category": "Design",
+    "docsUrl": "https://www.canva.dev",
+    "authHint": "OAuth 2.0 (Connect APIs)"
+  },
+  {
+    "id": "workday",
+    "name": "Workday",
+    "category": "HR",
+    "docsUrl": "https://community.workday.com",
+    "authHint": "OAuth 2.0, ISU (varies by tenant)"
+  },
+  {
+    "id": "bamboohr",
+    "name": "BambooHR",
+    "category": "HR",
+    "docsUrl": "https://documentation.bamboohr.com",
+    "authHint": "API key, OAuth"
+  },
+  {
+    "id": "gusto",
+    "name": "Gusto",
+    "category": "HR",
+    "docsUrl": "https://docs.gusto.com",
+    "authHint": "OAuth 2.0"
+  },
+  {
+    "id": "greenhouse",
+    "name": "Greenhouse",
+    "category": "HR",
+    "docsUrl": "https://developers.greenhouse.io",
+    "authHint": "API key (Basic auth)"
+  },
+  {
+    "id": "lever",
+    "name": "Lever",
+    "category": "HR",
+    "docsUrl": "https://hire.lever.co/developer/documentation",
+    "authHint": "OAuth 2.0, API key"
+  },
+  {
+    "id": "snowflake",
+    "name": "Snowflake",
+    "category": "Data",
+    "docsUrl": "https://docs.snowflake.com/developer-guide/sql-api/",
+    "authHint": "Key-pair JWT, OAuth"
+  },
+  {
+    "id": "google-bigquery",
+    "name": "Google BigQuery",
+    "category": "Data",
+    "docsUrl": "https://cloud.google.com/bigquery/docs/reference/rest",
+    "authHint": "Service account, OAuth 2.0"
+  },
+  {
+    "id": "amazon-s3",
+    "name": "Amazon S3",
+    "category": "Storage",
+    "docsUrl": "https://docs.aws.amazon.com/s3/",
+    "authHint": "AWS IAM (access keys, roles)"
+  },
+  {
+    "id": "supabase",
+    "name": "Supabase",
+    "category": "Database",
+    "docsUrl": "https://supabase.com/docs",
+    "authHint": "API keys, service role key"
+  },
+  {
+    "id": "firebase",
+    "name": "Firebase",
+    "category": "Database",
+    "docsUrl": "https://firebase.google.com/docs",
+    "authHint": "Service account, Firebase Auth"
+  },
+  {
+    "id": "postgresql",
+    "name": "PostgreSQL",
+    "category": "Database",
+    "docsUrl": "https://www.postgresql.org/docs/",
+    "authHint": "Database user (connection string)"
+  },
+  {
+    "id": "segment",
+    "name": "Segment",
+    "category": "Data",
+    "docsUrl": "https://segment.com/docs/api/",
+    "authHint": "Write key, API token"
+  },
+  {
+    "id": "mixpanel",
+    "name": "Mixpanel",
+    "category": "Data",
+    "docsUrl": "https://developer.mixpanel.com",
+    "authHint": "Service account, project secret"
+  },
+  {
+    "id": "amplitude",
+    "name": "Amplitude",
+    "category": "Data",
+    "docsUrl": "https://amplitude.com/docs/apis",
+    "authHint": "API key + secret key"
+  }
+]

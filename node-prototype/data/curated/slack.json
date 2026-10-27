@@ -1,0 +1,204 @@
+{
+  "id": "slack",
+  "provider": "Slack",
+  "product": "Slack Web API",
+  "category": "Communication",
+  "tier": "curated",
+  "lastVerified": "2026-10-27",
+  "defaultRequirement": "Build a Slack connector that supports creating, reading, updating, and deleting messages.",
+  "summary": "Slack supports all four message operations, but update and delete are limited by who wrote the message and which token the connector uses. Confirm the client's deletion expectations before building.",
+  "capabilities": [
+    {
+      "id": "msg-create",
+      "resource": "Messages",
+      "op": "create",
+      "label": "Create messages",
+      "method": "chat.postMessage",
+      "status": "conditional",
+      "conditions": "Needs the chat:write scope. The app must be a member of the channel, or also hold chat:write.public to post in public channels it has not joined.",
+      "evidence": [
+        { "type": "documented", "title": "chat.postMessage reference", "url": "https://docs.slack.dev/reference/methods/chat.postMessage" }
+      ]
+    },
+    {
+      "id": "msg-read",
+      "resource": "Messages",
+      "op": "read",
+      "label": "Read messages",
+      "method": "conversations.history / conversations.replies",
+      "status": "conditional",
+      "conditions": "Needs history scopes per conversation type (channels:history, groups:history, im:history, mpim:history). Since 2025, apps distributed outside the Slack Marketplace are limited to 1 request per minute and 15 messages per request on these methods. Internal (customer-built) apps keep higher limits.",
+      "evidence": [
+        { "type": "documented", "title": "conversations.history reference", "url": "https://docs.slack.dev/reference/methods/conversations.history" },
+        { "type": "documented", "title": "Rate limit changes for non-Marketplace apps (changelog, May 2025)", "url": "https://docs.slack.dev/changelog/2025/05/29/rate-limit-changes-for-non-marketplace-apps" }
+      ]
+    },
+    {
+      "id": "msg-update",
+      "resource": "Messages",
+      "op": "update",
+      "label": "Update messages",
+      "method": "chat.update",
+      "status": "conditional",
+      "conditions": "Bot tokens can only edit messages posted by that bot. User tokens can only edit messages that user could edit in Slack.",
+      "evidence": [
+        { "type": "documented", "title": "Modifying messages guide", "url": "https://docs.slack.dev/messaging/modifying-messages" },
+        { "type": "inferred", "title": "chat.update reference (ownership rule assumed to match chat.delete; re-check before quoting to a client)", "url": "https://docs.slack.dev/reference/methods/chat.update" }
+      ]
+    },
+    {
+      "id": "msg-delete",
+      "resource": "Messages",
+      "op": "delete",
+      "label": "Delete messages",
+      "method": "chat.delete",
+      "status": "unverified",
+      "conditions": "Depends on whose messages must be deleted. Answer the question above to resolve this.",
+      "evidence": [
+        { "type": "documented", "title": "chat.delete: bot tokens may delete only messages posted by that bot; user tokens only messages that user can delete", "url": "https://docs.slack.dev/reference/methods/chat.delete" },
+        { "type": "documented", "title": "Modifying messages guide: a Workspace Admin's user token can delete most messages", "url": "https://docs.slack.dev/messaging/modifying-messages" }
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "id": "delete-scope",
+      "question": "Whose messages must the connector be able to delete?",
+      "why": "Slack enforces different deletion rules for bot tokens, user tokens and admin user tokens. The answer changes the auth design and whether the requirement can be met at all.",
+      "options": [
+        {
+          "label": "Only messages the connector itself posted",
+          "effects": [
+            { "capability": "msg-delete", "status": "supported", "conditions": "A bot token with chat:write can delete messages that bot posted. No extra approval needed." }
+          ]
+        },
+        {
+          "label": "Messages written by the person who connected Slack",
+          "effects": [
+            { "capability": "msg-delete", "status": "conditional", "conditions": "Needs a user token (user scope chat:write) for each person. It can delete only what that person can delete in Slack, and workspace settings may stop members deleting their own messages." }
+          ]
+        },
+        {
+          "label": "Any message in the workspace",
+          "effects": [
+            { "capability": "msg-delete", "status": "conditional", "conditions": "Only possible with the user token of a Workspace Admin or Owner. A bot token cannot do this. Expect security review from the client, and confirm this is really the business need. Retention policies may be a better fit." }
+          ]
+        },
+        {
+          "label": "Permanently erase messages, including from exports and compliance holds",
+          "effects": [
+            { "capability": "msg-delete", "status": "unverified", "conditions": "chat.delete removes the message from the conversation, but the docs checked do not say how it interacts with exports, legal holds or Enterprise retention. Escalate to Slack support with the client's exact compliance requirement." }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "recommended": "OAuth 2.0 (Slack 'OAuth v2') installing a bot token (xoxb-)",
+    "why": "Bot tokens survive when the installing person leaves, and they are enough for create, read and editing the bot's own messages.",
+    "alternatives": [
+      "Add a user token (xoxp-) only if the connector must act on messages written by people.",
+      "Optional token rotation gives expiring tokens plus a refresh token. Turn it on for long-lived production installs."
+    ]
+  },
+  "blockers": [
+    {
+      "id": "install-approval",
+      "title": "Workspace may require admin approval to install apps",
+      "category": "approval",
+      "detail": "Many workspaces restrict app installation. Someone with install rights must approve the app and its scopes.",
+      "who": "Client's Slack admin",
+      "resolution": "Send the prepared approval request listing scopes and why each is needed.",
+      "handoff": "Hi! We're building a Slack integration for {requirement}. It needs these scopes: chat:write, channels:history, groups:history. Could you approve the app install (or tell us your app approval process)? Docs: https://docs.slack.dev/authentication/installing-with-oauth"
+    },
+    {
+      "id": "admin-token",
+      "title": "Workspace Admin must connect their own account",
+      "category": "access",
+      "detail": "Deleting any message requires a Workspace Admin or Owner's user token. The connector acts with their full permissions, so most security teams will want to review it.",
+      "who": "Client's Slack Workspace Admin/Owner",
+      "resolution": "Confirm the business need first (retention settings may solve it), then send the prepared request.",
+      "handoff": "Hi! The client asked for a connector that can delete any message in the workspace ({requirement}). Slack only allows this with a Workspace Admin/Owner user token (chat.delete docs: https://docs.slack.dev/reference/methods/chat.delete). Could you (1) confirm this is required rather than a retention policy, and (2) if yes, be the admin who authorizes the app?",
+      "appliesTo": { "answer": { "delete-scope": [2] } }
+    },
+    {
+      "id": "rate-limit",
+      "title": "Low message-history rate limit for distributed non-Marketplace apps",
+      "category": "capability",
+      "detail": "If the app is installed in other organizations' workspaces without being on the Slack Marketplace, conversations.history is limited to 1 request/minute and 15 messages per request.",
+      "who": "Developer + product owner",
+      "resolution": "Decide early: build as an internal app per workspace, apply for the Slack Marketplace, or design reads around webhooks/Events API instead of history polling.",
+      "appliesTo": { "audience": ["external"] }
+    },
+    {
+      "id": "marketplace",
+      "title": "Slack Marketplace review if listing publicly",
+      "category": "approval",
+      "detail": "Listing on the Marketplace is optional but requires Slack's review. Review time is not published.",
+      "who": "Developer, then Slack",
+      "resolution": "Prepare listing materials in parallel with development. Treat review time as unknown in plans.",
+      "appliesTo": { "audience": ["external"] }
+    }
+  ],
+  "alternatives": [
+    {
+      "insteadOf": "Deleting any message in the workspace",
+      "option": "Connector deletes only its own messages, and the client uses Slack's retention settings for everything else",
+      "doesNotCover": "Targeted deletion of individual human-authored messages on demand"
+    },
+    {
+      "insteadOf": "Polling message history often",
+      "option": "Subscribe to message events with the Events API",
+      "doesNotCover": "Backfilling history from before the app was installed"
+    }
+  ],
+  "estimate": {
+    "engineering": { "range": "1–3 days", "assumptions": "Bot-token install, standard OAuth, one workspace for testing." },
+    "waiting": { "range": "0 days to 1 week+", "notes": "None for your own workspace. Client workspace approval: hours to days. Marketplace review: unknown." },
+    "uncertainty": [
+      "Final deletion semantics depend on the client's answer above",
+      "Rate limits depend on how the app is distributed"
+    ]
+  },
+  "guide": [
+    {
+      "stage": "Prerequisites",
+      "tasks": [
+        { "id": "s-p1", "title": "Get a Slack workspace where you can install apps", "detail": "A free workspace you own is fine for testing.", "who": "Developer", "doneWhen": "You can open https://api.slack.com/apps and click 'Create New App'.", "source": "https://api.slack.com/apps" }
+      ]
+    },
+    {
+      "stage": "Choose authentication",
+      "tasks": [
+        { "id": "s-a1", "title": "Decide bot token vs. bot + user token", "detail": "Use the answer to 'Whose messages must the connector delete?'. Only add user scopes if you need to act on people's messages.", "who": "Developer + client", "doneWhen": "Scope list is written down and agreed with the client." }
+      ]
+    },
+    {
+      "stage": "Configure the app",
+      "tasks": [
+        { "id": "s-c1", "title": "Create the app and add bot scopes", "detail": "In 'OAuth & Permissions', add chat:write, channels:history (and groups:history / im:history if needed).", "who": "Developer", "doneWhen": "Scopes appear under 'Bot Token Scopes'.", "source": "https://docs.slack.dev/authentication/installing-with-oauth" },
+        { "id": "s-c2", "title": "Add your redirect URL", "detail": "Must exactly match the callback URL in your connector.", "who": "Developer", "doneWhen": "Redirect URL saved." }
+      ]
+    },
+    {
+      "stage": "Implement the connector",
+      "tasks": [
+        { "id": "s-i1", "title": "Implement the OAuth v2 flow", "detail": "Send users to the authorize URL, then exchange the code at oauth.v2.access. Store the bot token encrypted.", "who": "Developer", "doneWhen": "Your app stores an xoxb- token after installing.", "source": "https://docs.slack.dev/reference/methods/oauth.v2.access" },
+        { "id": "s-i2", "title": "Wire up the four operations", "detail": "chat.postMessage, conversations.history, chat.update, chat.delete. Keep the 'ts' value of each message. Update and delete both need it.", "who": "Developer", "doneWhen": "Each operation is callable from your connector." }
+      ]
+    },
+    {
+      "stage": "Test the required behavior",
+      "tasks": [
+        { "id": "s-t1", "title": "Run the ownership test", "detail": "Post as the bot, then update and delete it (should succeed). Then try deleting a human's message with the bot token. Expect 'cant_delete_message'. This proves the restriction rather than assuming it.", "who": "Developer", "doneWhen": "Results recorded in the Evidence tab." }
+      ]
+    },
+    {
+      "stage": "Prepare for production",
+      "tasks": [
+        { "id": "s-r1", "title": "Decide distribution and rate-limit strategy", "detail": "Internal app vs. distributed vs. Marketplace. See the rate-limit blocker.", "who": "Product owner", "doneWhen": "Decision recorded." },
+        { "id": "s-r2", "title": "Turn on token rotation and handle 'token_revoked'", "detail": "Ask users to reconnect when tokens are revoked.", "who": "Developer", "doneWhen": "Reconnect flow tested." }
+      ]
+    }
+  ]
+}
