@@ -4,56 +4,6 @@ Helps a developer answer, **before** spending hours on setup: *Can this app do w
 
 The rule behind it: **answer the most expensive question first**. That means feasibility, then access, then approvals, then setup steps, then proof.
 
----
-
-## Put it online (free, no coding, about 15 minutes)
-
-You'll need three free accounts: **Google** (for the Gemini key), **GitHub** (stores the code) and **Streamlit Community Cloud** (runs the app).
-
-### Step 1: Get a free Gemini API key
-1. Go to **https://aistudio.google.com/apikey** and sign in with a Google account.
-2. Click **Create API key** and accept the terms if asked.
-3. Click **Copy**. Paste the key into a private note for now. It's a long string of letters and numbers.
-
-> Keep this key private. Anyone who has it can use your free quota.
-
-### Step 2: Put the code on GitHub
-1. Create an account at **https://github.com** (or sign in).
-2. Click the **+** at the top right, then **New repository**.
-3. Name it `integration-readiness-copilot`, choose **Public**, and click **Create repository**.
-4. On the next page, click the link **uploading an existing file**.
-5. Unzip `integration-readiness-copilot-streamlit.zip` on your computer. Open the folder, select **everything inside it**, and drag it onto the GitHub page. Use Chrome or Edge, which can upload folders.
-   - On a Mac, the `.streamlit` folder may be hidden. Press **⌘ + Shift + .** in Finder to show it. If you skip it, the app still works; that folder only sets the colors.
-6. Click **Commit changes** at the bottom.
-7. Check: the repository should show `streamlit_app.py`, `requirements.txt`, and the `copilot` and `data` folders.
-
-### Step 3: Deploy on Streamlit Community Cloud
-1. Go to **https://share.streamlit.io** and click **Continue with GitHub**. Allow access.
-2. Click **Create app**, then **Deploy a public app from GitHub**.
-3. Fill in:
-   - **Repository:** `your-github-name/integration-readiness-copilot`
-   - **Branch:** `main`
-   - **Main file path:** `streamlit_app.py`
-   - **App URL:** pick a name you like (optional)
-4. Click **Advanced settings**. In the **Secrets** box, paste this line with your key from Step 1, then **Save**:
-   ```
-   GEMINI_API_KEY = "paste-your-key-here"
-   ```
-   *Prefer not to share your quota?* Leave Secrets empty. Each visitor can paste their own free key into the sidebar instead.
-5. Click **Deploy**. After 1–3 minutes you get a link like `https://your-app-name.streamlit.app`. That's your app.
-
-**To change the key later:** on share.streamlit.io, open your app's **⋮** menu, then **Settings**, then **Secrets**.
-**To update the app:** upload changed files to the GitHub repository. Streamlit redeploys automatically.
-
-### Optional: run it on your own computer
-1. Install Python from **https://www.python.org/downloads** (on Windows, tick **Add python.exe to PATH**).
-2. Open a terminal in the project folder:
-   - **Mac:** open Terminal, type `cd ` (with a space), drag the folder in, and press Enter.
-   - **Windows:** open the folder, click the address bar, type `cmd`, and press Enter.
-3. Run `pip install -r requirements.txt`, then `streamlit run streamlit_app.py`. On a Mac, use `pip3` if `pip` isn't found.
-4. Paste your Gemini key into the sidebar, or copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and put it there.
-
----
 
 ## 3-minute demo
 1. Under **Try an example**, click **Slack**, then **Assess integration**. The verdict is *Answer open questions before building*, because deleting Slack messages depends on whose messages they are.
